@@ -141,6 +141,7 @@
 
 /* ── S1 Hero ── */
 .sd-hero-title {
+  display: inline-block;
   background: linear-gradient(135deg, var(--ink) 20%, oklch(0.60 0.14 162) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

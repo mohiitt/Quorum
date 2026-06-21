@@ -112,7 +112,7 @@ export default function SlidesPage() {
             <span className="sd-hero-glyph">consensus protocol</span>
           </div>
           <div className="sd-anim sd-d2" style={{ marginTop: 16 }}>
-            <h1 className="sd-h1 sd-hero-title">Quorum</h1>
+            <h1 className="sd-h1"><span className="sd-hero-title">Quorum</span></h1>
           </div>
           <div className="sd-anim sd-d3" style={{ marginTop: 20 }}>
             <p className="sd-h3">Multi-agent trust &amp; consensus<br />for AI pipelines.</p>
