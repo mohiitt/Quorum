@@ -1,1 +1,28 @@
 .rocketride/
+
+# Secrets — NEVER commit
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dashboard/.next/
+dashboard/node_modules/
+
+# OS
+.DS_Store
+*.swp
