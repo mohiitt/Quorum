@@ -14,7 +14,13 @@ from __future__ import annotations
 import logging
 import os
 
-from uagents import Agent, Context, Model
+from uagents import Agent, Context, Model, Protocol
+from uagents_core.contrib.protocols.chat import (
+    ChatAcknowledgement,
+    ChatMessage,
+    TextContent,
+    chat_protocol_spec,
+)
 
 from quorum.agents.protocols import ClaimSubmission, ValidationVerdict, quorum_protocol
 from quorum.contracts.models import Claim
@@ -148,9 +154,16 @@ def _format_breakdown(validator_results) -> list[dict]:
     ]
 
 
+_AGENT_DESCRIPTION = (
+    "Multi-agent trust & consensus layer. Validates any claim via Source (live web), "
+    "Consistency, and Reasoning validators. Returns accepted/rejected/needs_review "
+    "verdict with a 0-1 confidence score and full per-validator breakdown."
+)
+
+
 def create_agentverse_agent(
     *,
-    name: str = "quorum-validator",
+    name: str = "Quorum Validator",
     seed: str | None = None,
     port: int = 8001,
     mailbox: bool = True,
@@ -158,7 +171,7 @@ def create_agentverse_agent(
     """Create the Agentverse-publishable Quorum validation agent.
 
     Args:
-        name:    Human-readable agent name shown in the marketplace.
+        name:    Display name shown in the Agentverse marketplace.
         seed:    Deterministic seed for a stable agent address. Set via
                  AGENT_SEED env var so the address never changes between
                  deploys.
@@ -172,6 +185,7 @@ def create_agentverse_agent(
         seed=_seed,
         port=port,
         mailbox=mailbox,
+        description=_AGENT_DESCRIPTION,
     )
 
     # Lazily-initialised pipeline — built on first use inside the async loop.
@@ -187,8 +201,8 @@ def create_agentverse_agent(
     # ------------------------------------------------------------------
 
     @agent.on_event("startup")
-    async def on_startup(ctx: Context) -> None:
-        logger.info("[agentverse] Quorum validator online — address: %s", ctx.address)
+    async def on_startup(ctx: Context) -> None:  # noqa: ARG001
+        logger.info("[agentverse] Quorum validator online — address: %s", agent.address)
         await _get_pipeline()  # warm-up: load models, open HTTP clients
 
     # ------------------------------------------------------------------
@@ -252,4 +266,65 @@ def create_agentverse_agent(
         )
 
     agent.include(quorum_protocol)
+
+    # ------------------------------------------------------------------
+    # Handler 3: Agent Chat Protocol — enables ASI:One chat UI
+    # ------------------------------------------------------------------
+
+    chat_protocol = Protocol(spec=chat_protocol_spec)
+
+    @chat_protocol.on_message(ChatMessage, replies=None)
+    async def handle_chat_message(
+        ctx: Context, sender: str, msg: ChatMessage
+    ) -> None:
+        """Handle plain-text chat from ASI:One or any agent using the chat protocol."""
+        await ctx.send(sender, ChatAcknowledgement(acknowledged_msg_id=msg.msg_id))
+
+        user_text = msg.text().strip()
+        if not user_text:
+            await ctx.send(
+                sender,
+                ChatMessage(content=[TextContent(
+                    text="Please send a claim or statement to validate."
+                )]),
+            )
+            return
+
+        pipeline = await _get_pipeline()
+        claim = Claim(
+            agent_id=sender,
+            workflow_id="wf-agentverse-chat",
+            statement=user_text,
+        )
+        logger.info("[agentverse] chat from %s — '%s'", sender, user_text[:80])
+
+        try:
+            result = await pipeline.process(claim)
+            breakdown_lines = [
+                f"  • {b['validator']}: {b['verdict']} ({b['confidence']*100:.0f}%)"
+                for b in _format_breakdown(result.validator_results)
+            ]
+            verdict_emoji = {"accepted": "✅", "rejected": "❌", "needs_review": "⚠️"}.get(
+                result.verdict.value, "❓"
+            )
+            reply = (
+                f"{verdict_emoji} **{result.verdict.value.upper()}** "
+                f"(score: {result.score:.2f})\n\n"
+                f"{result.rationale}\n\n"
+                f"**Validator breakdown:**\n" + "\n".join(breakdown_lines)
+            )
+        except Exception as exc:
+            logger.error("[agentverse] chat pipeline error: %s", exc)
+            reply = "⚠️ Validation failed due to an internal error. Please try again."
+
+        await ctx.send(sender, ChatMessage(content=[TextContent(text=reply)]))
+
+    @chat_protocol.on_message(ChatAcknowledgement, replies=None)
+    async def handle_chat_ack(
+        ctx: Context, sender: str, msg: ChatAcknowledgement  # noqa: ARG001
+    ) -> None:
+        pass  # acknowledgements are fire-and-forget
+
+    agent.include(chat_protocol)
+
     return agent
