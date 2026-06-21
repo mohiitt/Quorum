@@ -174,10 +174,14 @@ function AgentCard({ step, expanded, onToggle }: {
             <p className="text-xs text-zinc-200 bg-zinc-800/50 rounded px-2 py-1.5">&ldquo;{step.claim}&rdquo;</p>
           </div>
 
-          {/* Quorum rationale */}
+          {/* Quorum rationale — summary line only */}
           <div>
             <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Quorum Rationale</p>
-            <p className="text-xs text-zinc-300">{step.rationale}</p>
+            <p className="text-xs text-zinc-300">
+              {step.rationale
+                ? step.rationale.split(/\s*\[/)[0].trim()
+                : ""}
+            </p>
           </div>
 
           {/* Validator breakdown */}
@@ -195,8 +199,15 @@ function AgentCard({ step, expanded, onToggle }: {
                       }`}>
                         {vb.verdict === "accepted" ? "✓" : vb.verdict === "rejected" ? "✗" : "~"}
                       </span>
-                      <span className="text-zinc-300 font-medium capitalize">{vb.name.replace("ValidatorName.", "")}</span>
-                      <span className="text-zinc-500">({(vb.confidence * 100).toFixed(0)}%)</span>
+                      <span className="text-zinc-200 font-semibold capitalize">
+                        {vb.name.replace("ValidatorName.", "").toLowerCase()}
+                      </span>
+                      <span className={`ml-auto font-bold tabular-nums text-sm ${
+                        vb.verdict === "accepted" ? "text-emerald-400" :
+                        vb.verdict === "rejected" ? "text-red-400" : "text-amber-400"
+                      }`}>
+                        {(vb.confidence * 100).toFixed(0)}%
+                      </span>
                     </div>
 
                     {/* Rationale */}
