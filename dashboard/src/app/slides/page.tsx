@@ -446,9 +446,9 @@ export default function SlidesPage() {
             </p>
           </div>
           <div className="sd-anim sd-d4" style={{ marginTop: 40, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/demo" style={{ fontFamily: "var(--font-mono)", fontSize: 12, background: "var(--emerald)", color: "oklch(0.1 0.05 162)", padding: "10px 24px", borderRadius: 8, fontWeight: 500, textDecoration: "none", letterSpacing: "0.06em" }}>
+            <a href="/demo" style={{ fontFamily: "var(--font-mono)", fontSize: 12, background: "#1fad6b", color: "#0a1f14", padding: "10px 24px", borderRadius: 8, fontWeight: 500, textDecoration: "none", letterSpacing: "0.06em" }}>
               Try the Demo →
-            </Link>
+            </a>
             <a href="https://agentverse.ai" target="_blank" rel="noreferrer" style={{ fontFamily: "var(--font-mono)", fontSize: 12, border: "1px solid var(--ink-muted)", color: "var(--ink-dim)", padding: "10px 24px", borderRadius: 8, textDecoration: "none", letterSpacing: "0.06em" }}>
               Find on Agentverse
             </a>
