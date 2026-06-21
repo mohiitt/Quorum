@@ -152,6 +152,7 @@ def create_agentverse_agent(
     *,
     name: str = "quorum-validator",
     seed: str | None = None,
+    port: int = 8001,
     mailbox: bool = True,
 ) -> Agent:
     """Create the Agentverse-publishable Quorum validation agent.
@@ -169,6 +170,7 @@ def create_agentverse_agent(
     agent = Agent(
         name=name,
         seed=_seed,
+        port=port,
         mailbox=mailbox,
     )
 
