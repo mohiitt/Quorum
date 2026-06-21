@@ -142,10 +142,15 @@ async def _build_pipeline():
 # ---------------------------------------------------------------------------
 
 
+def _clean_name(raw) -> str:
+    """Normalise validator name: strip enum prefix and lowercase."""
+    return str(raw).replace("ValidatorName.", "").lower()
+
+
 def _format_breakdown(validator_results) -> list[dict]:
     return [
         {
-            "validator": str(vr.validator_name).replace("ValidatorName.", ""),
+            "validator": _clean_name(vr.validator_name),
             "verdict": vr.verdict.value,
             "confidence": round(vr.confidence, 3),
             "rationale": (vr.rationale or "")[:300],
@@ -300,19 +305,31 @@ def create_agentverse_agent(
 
         try:
             result = await pipeline.process(claim)
-            breakdown_lines = [
-                f"  • {b['validator']}: {b['verdict']} ({b['confidence']*100:.0f}%)"
-                for b in _format_breakdown(result.validator_results)
-            ]
-            verdict_emoji = {"accepted": "✅", "rejected": "❌", "needs_review": "⚠️"}.get(
-                result.verdict.value, "❓"
-            )
-            reply = (
-                f"{verdict_emoji} **{result.verdict.value.upper()}** "
-                f"(score: {result.score:.2f})\n\n"
-                f"{result.rationale}\n\n"
-                f"**Validator breakdown:**\n" + "\n".join(breakdown_lines)
-            )
+            breakdown = _format_breakdown(result.validator_results)
+
+            _v_emoji = {"accepted": "✅", "rejected": "❌", "needs_review": "⚠️"}
+            verdict_emoji = _v_emoji.get(result.verdict.value, "❓")
+
+            n_total     = len(breakdown)
+            n_accepted  = sum(1 for b in breakdown if b["verdict"] == "accepted")
+            n_rejected  = sum(1 for b in breakdown if b["verdict"] == "rejected")
+            n_review    = sum(1 for b in breakdown if b["verdict"] == "needs_review")
+
+            validator_sections = []
+            for b in breakdown:
+                ve = _v_emoji.get(b["verdict"], "❓")
+                rationale = b["rationale"]
+                short = rationale[:250] + ("…" if len(rationale) > 250 else "")
+                validator_sections.append(
+                    f"{ve} **{b['validator'].capitalize()}** — "
+                    f"{b['verdict'].replace('_', ' ')} ({b['confidence']*100:.0f}%)\n"
+                    f"{short}"
+                )
+
+            reply = "\n\n".join([
+                f"{verdict_emoji} **{result.verdict.value.replace('_', ' ').upper()}**  |  score: {result.score:.2f}  |  {n_total} validators: {n_accepted} accepted · {n_rejected} rejected · {n_review} needs review",
+                *validator_sections,
+            ])
         except Exception as exc:
             logger.error("[agentverse] chat pipeline error: %s", exc)
             reply = "⚠️ Validation failed due to an internal error. Please try again."
