@@ -1,5 +1,9 @@
 # Quorum
 
+Chat with our agent at : https://asi1.ai/chat/1e44922f-85dc-42f3-bfdf-9465fd083c78
+
+Live Agent at: https://agentverse.ai/agents/details/agent1qtvr2pk4hp4gfh4wh2af33vpjv5zmawz9tj4q6ngt09tandh2jg8smkfak9/profile
+
 **Trust and consensus layer for Fetch.ai multi-agent systems.**
 
 > Prevents a single hallucinating agent from corrupting an entire multi-agent workflow.
