@@ -170,14 +170,14 @@ function AgentCard({ step, expanded, onToggle }: {
         <div className="px-4 pb-4 space-y-3 border-t border-zinc-800/60 pt-3">
           {/* Full claim */}
           <div>
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Agent Claim</p>
-            <p className="text-xs text-zinc-200 bg-zinc-800/50 rounded px-2 py-1.5">&ldquo;{step.claim}&rdquo;</p>
+            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Agent Claim</p>
+            <p className="text-sm text-zinc-200 bg-zinc-800/50 rounded px-2 py-1.5">&ldquo;{step.claim}&rdquo;</p>
           </div>
 
           {/* Quorum rationale — summary line only */}
           <div>
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Quorum Rationale</p>
-            <p className="text-xs text-zinc-300">
+            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Quorum Rationale</p>
+            <p className="text-sm text-zinc-300">
               {step.rationale
                 ? step.rationale.split(/\s*\[/)[0].trim()
                 : ""}
@@ -187,22 +187,22 @@ function AgentCard({ step, expanded, onToggle }: {
           {/* Validator breakdown */}
           {step.validator_breakdown && step.validator_breakdown.length > 0 && (
             <div>
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">Validator Breakdown</p>
+              <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Validator Breakdown</p>
               <div className="space-y-1.5">
                 {step.validator_breakdown.map((vb) => (
-                  <div key={vb.name} className="text-xs bg-zinc-800/40 rounded px-2 py-2 space-y-1">
+                  <div key={vb.name} className="bg-zinc-800/40 rounded px-3 py-2.5 space-y-1.5">
                     {/* Header row: icon + name + score */}
-                    <div className="flex items-center gap-1.5">
-                      <span className={`font-mono shrink-0 ${
+                    <div className="flex items-center gap-2">
+                      <span className={`font-mono text-sm shrink-0 ${
                         vb.verdict === "accepted" ? "text-emerald-400" :
                         vb.verdict === "rejected" ? "text-red-400" : "text-amber-400"
                       }`}>
                         {vb.verdict === "accepted" ? "✓" : vb.verdict === "rejected" ? "✗" : "~"}
                       </span>
-                      <span className="text-zinc-200 font-semibold capitalize">
+                      <span className="text-sm text-zinc-100 font-bold capitalize">
                         {vb.name.replace("ValidatorName.", "").toLowerCase()}
                       </span>
-                      <span className={`ml-auto font-bold tabular-nums text-sm ${
+                      <span className={`ml-auto font-bold tabular-nums text-base ${
                         vb.verdict === "accepted" ? "text-emerald-400" :
                         vb.verdict === "rejected" ? "text-red-400" : "text-amber-400"
                       }`}>
@@ -212,18 +212,18 @@ function AgentCard({ step, expanded, onToggle }: {
 
                     {/* Rationale */}
                     {vb.rationale && (
-                      <p className="text-zinc-400 ml-4 line-clamp-3">{vb.rationale}</p>
+                      <p className="text-xs text-zinc-400 ml-5 line-clamp-3">{vb.rationale}</p>
                     )}
 
                     {/* Score derivation (source validator only) */}
                     {vb.score_source && (
-                      <p className="text-zinc-600 ml-4 text-[10px] italic">{vb.score_source}</p>
+                      <p className="text-zinc-600 ml-5 text-[10px] italic">{vb.score_source}</p>
                     )}
 
                     {/* Evidence citations (source validator only) */}
                     {vb.name === "source" && vb.evidence && vb.evidence.length > 0 && (
-                      <div className="ml-4 mt-1 space-y-0.5">
-                        <p className="text-[10px] text-zinc-600 font-semibold uppercase tracking-wider">Sources consulted</p>
+                      <div className="ml-5 mt-1 space-y-0.5">
+                        <p className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">Sources consulted</p>
                         {vb.evidence.map((ev, i) => (
                           <div key={i} className="text-[10px] text-zinc-500 border-l-2 border-zinc-700/70 pl-1.5 py-0.5">
                             <span className="font-mono text-zinc-600 uppercase text-[9px]">{ev.source}</span>
@@ -236,7 +236,7 @@ function AgentCard({ step, expanded, onToggle }: {
 
                     {/* Explicit no-source message */}
                     {vb.name === "source" && (!vb.evidence || vb.evidence.length === 0) && (
-                      <p className="text-[10px] text-zinc-600 ml-4 italic">No external sources retrieved.</p>
+                      <p className="text-xs text-zinc-600 ml-5 italic">No external sources retrieved.</p>
                     )}
                   </div>
                 ))}
