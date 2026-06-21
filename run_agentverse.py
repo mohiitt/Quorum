@@ -21,6 +21,7 @@ Copy .env.example → .env and fill in values before running.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import threading
@@ -30,6 +31,10 @@ import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Python 3.10+ no longer auto-creates an event loop in the main thread.
+# uAgents calls get_event_loop() during Agent.__init__, so we must set one first.
+asyncio.set_event_loop(asyncio.new_event_loop())
 
 logging.basicConfig(
     level=logging.INFO,
