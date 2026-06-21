@@ -44,6 +44,7 @@ Agent Claim
     ↓               ↓               ↓
 Workflow State   Dashboard      Trust Scores
 ```
+<img width="1774" height="887" alt="ChatGPT Image Jun 21, 2026 at 10_45_46 AM" src="https://github.com/user-attachments/assets/e138db18-219b-4967-adca-2620c4fec5b2" />
 
 ---
 
@@ -71,8 +72,6 @@ Workflow State   Dashboard      Trust Scores
 | **Fetch.ai** | uAgents protocols, Bureau multi-agent orchestration |
 | **Redis** | Workflow state, provenance, trust, quarantine, consensus history |
 | **Anthropic** | Consistency + reasoning validators (Claude) |
-| **Sentry** | Validation failures, consensus errors |
-| **Arize** | Validator quality metrics, drift detection |
 | **Browserbase** | Web verification fallback for open-ended claims |
 
 ---
