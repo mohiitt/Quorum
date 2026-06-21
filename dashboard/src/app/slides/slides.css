@@ -141,11 +141,11 @@
 
 /* ── S1 Hero ── */
 .sd-hero-title {
-  display: inline-block;
-  background: linear-gradient(135deg, var(--ink) 20%, oklch(0.60 0.14 162) 100%);
+  display: inline;
+  background: linear-gradient(145deg, #f0f0f0 0%, #d4f7e8 50%, #1fad6b 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent;
 }
 .sd-hero-glyph {
   font-family: var(--font-mono);
